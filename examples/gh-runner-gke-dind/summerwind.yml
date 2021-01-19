@@ -1,0 +1,32 @@
+# runnerdeployment.yaml
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: summerwind-runner-deployment-baseline
+spec:
+  template:
+    spec:
+      minReplicas: 2
+      maxReplicas: 10
+      organization: baseline
+      image: jonico/summerwind-actions-runner-with-stress:latest
+      labels:
+        - summerwind
+      group: kubernetes
+---
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: HorizontalRunnerAutoscaler
+metadata:
+  name: summerwind-runner-baseline-autoscaler
+spec:
+  scaleTargetRef:
+    name: summerwind-runner-deployment-baseline
+  minReplicas: 2
+  maxReplicas: 10
+  scaleDownDelaySecondsAfterScaleOut: 300
+  metrics:
+  - type: PercentageRunnersBusy
+    scaleUpThreshold: '0.5'
+    scaleDownThreshold: '0.3'
+    scaleUpFactor: '1.5'
+    scaleDownFactor: '0.7'

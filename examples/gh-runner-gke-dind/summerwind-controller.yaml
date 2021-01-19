@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"deployment.kubernetes.io/revision":"2"},"creationTimestamp":"2021-01-18T14:27:21Z","generation":2,"labels":{"control-plane":"controller-manager"},"name":"controller-manager","namespace":"actions-runner-system","resourceVersion":"378295","selfLink":"/apis/apps/v1/namespaces/actions-runner-system/deployments/controller-manager","uid":"8dc7d9bb-0d7b-4133-9f8e-0faa072bc15a"},"spec":{"progressDeadlineSeconds":600,"replicas":1,"revisionHistoryLimit":10,"selector":{"matchLabels":{"control-plane":"controller-manager"}},"strategy":{"rollingUpdate":{"maxSurge":"25%","maxUnavailable":"25%"},"type":"RollingUpdate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"control-plane":"controller-manager"}},"spec":{"containers":[{"args":["--secure-listen-address=0.0.0.0:8443","--upstream=http://127.0.0.1:8080/","--logtostderr=true","--v=10"],"image":"gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1","imagePullPolicy":"IfNotPresent","name":"kube-rbac-proxy","ports":[{"containerPort":8443,"name":"https","protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"},{"args":["--metrics-addr=127.0.0.1:8080","--enable-leader-election","--sync-period=10m"],"command":["/manager"],"env":[{"name":"GITHUB_TOKEN","valueFrom":{"secretKeyRef":{"key":"github_token","name":"controller-manager","optional":true}}},{"name":"GITHUB_APP_ID","valueFrom":{"secretKeyRef":{"key":"github_app_id","name":"controller-manager","optional":true}}},{"name":"GITHUB_APP_INSTALLATION_ID","valueFrom":{"secretKeyRef":{"key":"github_app_installation_id","name":"controller-manager","optional":true}}},{"name":"GITHUB_APP_PRIVATE_KEY","value":"/etc/actions-runner-controller/github_app_private_key"},{"name":"GITHUB_ENTERPRISE_URL","value":"https://octodemo.com"}],"image":"summerwind/actions-runner-controller:v0.16.0","imagePullPolicy":"IfNotPresent","name":"manager","ports":[{"containerPort":9443,"name":"webhook-server","protocol":"TCP"}],"resources":{"limits":{"cpu":"100m","memory":"100Mi"},"requests":{"cpu":"100m","memory":"20Mi"}},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/tmp/k8s-webhook-server/serving-certs","name":"cert","readOnly":true},{"mountPath":"/etc/actions-runner-controller","name":"controller-manager","readOnly":true}]}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":10,"volumes":[{"name":"cert","secret":{"defaultMode":420,"secretName":"webhook-server-cert"}},{"name":"controller-manager","secret":{"defaultMode":420,"secretName":"controller-manager"}}]}}},"status":{"availableReplicas":1,"conditions":[{"lastTransitionTime":"2021-01-18T14:53:59Z","lastUpdateTime":"2021-01-18T14:53:59Z","message":"Deployment has minimum availability.","reason":"MinimumReplicasAvailable","status":"True","type":"Available"},{"lastTransitionTime":"2021-01-18T14:53:59Z","lastUpdateTime":"2021-01-18T15:10:28Z","message":"ReplicaSet \"controller-manager-6dcd847d97\" has successfully progressed.","reason":"NewReplicaSetAvailable","status":"True","type":"Progressing"}],"observedGeneration":2,"readyReplicas":1,"replicas":1,"updatedReplicas":1}}
+  creationTimestamp: "2021-01-18T14:27:21Z"
+  generation: 3
+  labels:
+    control-plane: controller-manager
+  name: controller-manager
+  namespace: actions-runner-system
+  resourceVersion: "598022"
+  selfLink: /apis/apps/v1/namespaces/actions-runner-system/deployments/controller-manager
+  uid: 8dc7d9bb-0d7b-4133-9f8e-0faa072bc15a
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=10
+        image: gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
+        imagePullPolicy: IfNotPresent
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - args:
+        - --metrics-addr=127.0.0.1:8080
+        - --enable-leader-election
+        - --sync-period=1m
+        command:
+        - /manager
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: github_token
+              name: controller-manager
+              optional: true
+        - name: GITHUB_APP_ID
+          valueFrom:
+            secretKeyRef:
+              key: github_app_id
+              name: controller-manager
+              optional: true
+        - name: GITHUB_APP_INSTALLATION_ID
+          valueFrom:
+            secretKeyRef:
+              key: github_app_installation_id
+              name: controller-manager
+              optional: true
+        - name: GITHUB_APP_PRIVATE_KEY
+          value: /etc/actions-runner-controller/github_app_private_key
+        - name: GITHUB_ENTERPRISE_URL
+          value: https://octodemo.com
+        image: summerwind/actions-runner-controller:v0.16.0
+        imagePullPolicy: IfNotPresent
+        name: manager
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        - mountPath: /etc/actions-runner-controller
+          name: controller-manager
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert
+      - name: controller-manager
+        secret:
+          defaultMode: 420
+          secretName: controller-manager
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2021-01-18T14:53:59Z"
+    lastUpdateTime: "2021-01-18T14:53:59Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2021-01-18T14:53:59Z"
+    lastUpdateTime: "2021-01-18T15:10:28Z"
+    message: ReplicaSet "controller-manager-6dcd847d97" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 3
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
