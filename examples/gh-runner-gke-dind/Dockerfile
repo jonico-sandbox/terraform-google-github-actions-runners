@@ -28,9 +28,10 @@ RUN apt-get update && \
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" && \
     apt-get update && \
-    apt-get -y install docker-ce
+    apt-get -y install docker-ce && \
+    apt-get install stress
 
-ARG GH_RUNNER_VERSION="2.169.0"
+ARG GH_RUNNER_VERSION="2.272.0"
 WORKDIR /runner
 RUN curl -o actions.tar.gz --location "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz" && \
     tar -zxf actions.tar.gz && \
